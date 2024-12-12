@@ -31,6 +31,7 @@ exports.handlePayPalWebhook = async (req, res) => {
     switch (eventType) {
       case 'PAYMENT.CAPTURE.COMPLETED':
         console.log('Payment successful:', body.resource);
+        recordPurchase(body.resource)
         // Add your logic for successful payment
         break;
 
@@ -39,8 +40,8 @@ exports.handlePayPalWebhook = async (req, res) => {
         // Add your logic for denied payment
         break;
 
-      default:
-        console.log('Unhandled event type:', eventType);
+    //   default:
+    //     console.log('Unhandled event type:', eventType);
     }
 
     res.status(200).send('Webhook received');
