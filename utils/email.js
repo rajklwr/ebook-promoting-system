@@ -11,7 +11,7 @@ exports.sendEmail = async ({ to, subject, html }) => {
     resend.emails
     .send(msg)
     .then((data) => {
-      console.log('Email sent:', data)
+      console.log('Email sent To:', to)
     })
     .catch((error) => {
       console.error('Error:', error)

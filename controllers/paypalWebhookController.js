@@ -31,6 +31,7 @@ exports.handlePayPalWebhook = async (req, res) => {
     switch (eventType) {
       case 'PAYMENT.CAPTURE.COMPLETED':
         console.log('Payment successful:', body.resource);
+        console.log('Purchase Units :', body.resource.purchase_units)
         recordPurchase(body.resource)
         // Add your logic for successful payment
         break;
@@ -82,7 +83,6 @@ const validatePayPalSignature = async (headers, body) => {
 
 const recordPurchase = async (resource) => {
     try {
-    //   const { purchaserEmail, ebookName, price, referrer } = req.body;
     const purchaserEmail = resource?.payer?.email_address
     const ebookName = "YT AUTOMATION"
     const price = 27;
