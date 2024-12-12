@@ -1,4 +1,7 @@
 const crypto = require('crypto');
+const Purchase = require('../models/Purchase');
+const Youtuber = require('../models/Youtuber');
+const { sendPurchaseEmails } = require('../controllers/emailController');
 let fetch;
 (async () => {
   fetch = (await import('node-fetch')).default;
@@ -15,13 +18,15 @@ exports.handlePayPalWebhook = async (req, res) => {
 
   try {
     // Validate the PayPal webhook signature
-    const isValid = await validatePayPalSignature(req.headers, body);
-    if (!isValid) {
-      return res.status(400).send('Invalid signature');
-    }
+    // const isValid = await validatePayPalSignature(req.headers, body);
+    // if (!isValid) {
+    //   return res.status(400).send('Invalid signature');
+    // }
 
     // Process the event
     const eventType = body.event_type;
+
+    console.log('event type :', eventType)
 
     switch (eventType) {
       case 'PAYMENT.CAPTURE.COMPLETED':
@@ -72,5 +77,30 @@ const validatePayPalSignature = async (headers, body) => {
     console.log('expected signature:', isValid);
   
     return isValid;
+  };
+
+const recordPurchase = async (resource) => {
+    try {
+    //   const { purchaserEmail, ebookName, price, referrer } = req.body;
+    const purchaserEmail = resource?.payer?.email_address
+    const ebookName = "YT AUTOMATION"
+    const price = 27;
+    const referrer = 'RAJ123'
+  
+      // Validate referrer
+      const youtuber = await Youtuber.findOne({ referralCode: referrer });
+      if (!youtuber) return res.status(400).json({ message: 'Invalid referral code' });
+  
+      // Record purchase
+      const purchase = new Purchase({ purchaserEmail, ebookName, price, referrer });
+      await purchase.save();
+  
+      // Send emails
+      sendPurchaseEmails(purchaserEmail, youtuber.email,youtuber?.name, ebookName);
+  
+      res.status(201).json({ message: 'Purchase recorded successfully!' });
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
   };
   

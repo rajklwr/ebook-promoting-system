@@ -196,11 +196,13 @@ exports.sendPurchaseEmails = async (purchaserEmail, youtuberEmail, youtuberName,
     });
 
     // Send email to youtuber
-    await sendEmail({
-      to: youtuberEmail,
-      subject: 'Referral Commission Earned',
-      html: youtuberTemplate,
-    });
+    if (youtuberEmail){
+        await sendEmail({
+            to: youtuberEmail,
+            subject: 'Referral Commission Earned',
+            html: youtuberTemplate,
+          });
+    }
   } catch (error) {
     console.error('Error sending emails:', error.message);
   }
