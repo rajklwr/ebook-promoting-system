@@ -25,6 +25,8 @@ exports.recordPurchase = async (req, res) => {
       { $inc: { successReferral: 1 } }
     );
 
+    // console.log('success referral :',youtuber?.successReferral )
+
     // Send emails
     sendPurchaseEmails(
       purchaserEmail,

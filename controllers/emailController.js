@@ -175,7 +175,6 @@ exports.sendPurchaseEmails = async (
               <div class="email-header">
                   <img src="https://res.cloudinary.com/dm9iuudyc/image/upload/v1734018375/elixzor-consulting/Logo/elixzor_logo003_dgsuut.png" alt="Your Logo">
               </div>
-
               <!-- Body -->
               <div class="email-body">
                   <h1>Referral Commission Earned, ${youtuberName}!</h1>
