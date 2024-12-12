@@ -1,6 +1,6 @@
 const { sendEmail } = require('../utils/email');
 
-exports.sendPurchaseEmails = async (purchaserEmail, youtuberEmail, youtuberName, ebookName, orderID) => {
+exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail, youtuberName, ebookName, orderID) => {
   try {
     // HTML template for purchaser
     const purchaserTemplate = `
@@ -76,7 +76,7 @@ exports.sendPurchaseEmails = async (purchaserEmail, youtuberEmail, youtuberName,
 
               <!-- Body -->
               <div class="email-body">
-                  <h1>Thank You for Your Purchase, ${youtuberName}!</h1>
+                  <h1>Thank You for Your Purchase, ${PurchaserName}!</h1>
                   <p>We’re thrilled to let you know that your order has been confirmed.</p>
                   <p><strong>Order Details:</strong></p>
                   <p>Order ID: <strong>${orderID || 'ORDER_1234'}</strong></p>

@@ -32,7 +32,7 @@ exports.handlePayPalWebhook = async (req, res) => {
       case 'CHECKOUT.ORDER.APPROVED':
         console.log('Payment successful:', body.resource);
         console.log('Purchase Units :', body.resource.purchase_units)
-        recordPurchase(body.resource)
+        await recordPurchase(body.resource)
         // Add your logic for successful payment
         break;
 
@@ -86,7 +86,12 @@ const recordPurchase = async (resource) => {
     const purchaserEmail = resource?.payer?.email_address
     const ebookName = "YT AUTOMATION"
     const price = 27;
-    const referrer = 'RAJ123'
+    const referrer = resource.purchase_units[0].custom_id
+    const purchaserName = resource.payer?.name?.given_name
+    const orderId = resource.id
+
+    console.log('Referral Id ', referrer);
+    console.log('Purchaser Name :', purchaserName )
   
       // Validate referrer
       const youtuber = await Youtuber.findOne({ referralCode: referrer });
@@ -99,11 +104,12 @@ const recordPurchase = async (resource) => {
       await purchase.save();
   
       // Send emails
-      sendPurchaseEmails(purchaserEmail, youtuber.email,youtuber?.name, ebookName);
+      sendPurchaseEmails(purchaserEmail, purchaserName, youtuber?.email ,youtuber?.name, ebookName, orderId);
   
-      res.status(201).json({ message: 'Purchase recorded successfully!' });
+      // res.status(201).json({ message: 'Purchase recorded successfully!' });
     } catch (error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
+      throw new Error(error);
+      // res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
   
