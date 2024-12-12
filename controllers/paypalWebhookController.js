@@ -29,20 +29,20 @@ exports.handlePayPalWebhook = async (req, res) => {
     console.log('event type :', eventType)
 
     switch (eventType) {
-      case 'PAYMENT.CAPTURE.COMPLETED':
+      case 'CHECKOUT.ORDER.APPROVED':
         console.log('Payment successful:', body.resource);
         console.log('Purchase Units :', body.resource.purchase_units)
         recordPurchase(body.resource)
         // Add your logic for successful payment
         break;
 
-      case 'PAYMENT.CAPTURE.DENIED':
+      case 'CHECKOUT.ORDER.DENIED':
         console.log('Payment denied:', body.resource);
         // Add your logic for denied payment
         break;
 
-    //   default:
-    //     console.log('Unhandled event type:', eventType);
+      default:
+        console.log('Unhandled event type:', eventType);
     }
 
     res.status(200).send('Webhook received');
@@ -91,6 +91,8 @@ const recordPurchase = async (resource) => {
       // Validate referrer
       const youtuber = await Youtuber.findOne({ referralCode: referrer });
       if (!youtuber) return res.status(400).json({ message: 'Invalid referral code' });
+
+      console.log('Youtuber :', youtuber)
   
       // Record purchase
       const purchase = new Purchase({ purchaserEmail, ebookName, price, referrer });
