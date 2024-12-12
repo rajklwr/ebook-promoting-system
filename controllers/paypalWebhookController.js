@@ -11,6 +11,8 @@ const PAYPAL_WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
 exports.handlePayPalWebhook = async (req, res) => {
   const body = req.body;
 
+  console.log('body : ', body);
+
   try {
     // Validate the PayPal webhook signature
     const isValid = await validatePayPalSignature(req.headers, body);
@@ -45,24 +47,30 @@ exports.handlePayPalWebhook = async (req, res) => {
 
 // Function to validate the PayPal webhook signature
 const validatePayPalSignature = async (headers, body) => {
-  const { 'paypal-transmission-id': transmissionId, 
-          'paypal-transmission-time': transmissionTime, 
-          'paypal-cert-url': certUrl, 
-          'paypal-auth-algo': authAlgo, 
-          'paypal-transmission-sig': transmissionSig } = headers;
-
-  const webhookId = PAYPAL_WEBHOOK_ID;
-  const bodyString = JSON.stringify(body);
-
-  const response = await fetch(certUrl);
-  const cert = await response.text();
-
-  const expectedSignature = crypto
-    .createVerify(authAlgo)
-    .update(`${transmissionId}|${transmissionTime}|${webhookId}|${crypto.createHash('sha256').update(bodyString).digest('hex')}`)
-    .verify(cert, transmissionSig, 'base64');
-
-   console.log('expected signature :', expectedSignature) ;
-
-  return expectedSignature;
-};
+    const { 'paypal-transmission-id': transmissionId, 
+            'paypal-transmission-time': transmissionTime, 
+            'paypal-cert-url': certUrl, 
+            'paypal-auth-algo': authAlgo, 
+            'paypal-transmission-sig': transmissionSig } = headers;
+  
+    const webhookId = PAYPAL_WEBHOOK_ID;
+    const bodyString = JSON.stringify(body); // Ensure body is correctly stringified
+  
+    // Fetch the PayPal certificate
+    const response = await fetch(certUrl);
+    const cert = await response.text();
+  
+    // Construct the string to be verified
+    const stringToVerify = `${transmissionId}|${transmissionTime}|${webhookId}|${crypto.createHash('sha256').update(bodyString).digest('hex')}`;
+  
+    // Verify the signature
+    const isValid = crypto
+      .createVerify(authAlgo)
+      .update(stringToVerify)
+      .verify(cert, transmissionSig, 'base64');
+  
+    console.log('expected signature:', isValid);
+  
+    return isValid;
+  };
+  
