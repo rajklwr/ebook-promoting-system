@@ -1,6 +1,13 @@
-const { sendEmail } = require('../utils/email');
+const { sendEmail } = require("../utils/email");
 
-exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail, youtuberName, ebookName, orderID) => {
+exports.sendPurchaseEmails = async (
+  purchaserEmail,
+  PurchaserName,
+  youtuberEmail,
+  youtuberName,
+  ebookName,
+  orderID
+) => {
   try {
     // HTML template for purchaser
     const purchaserTemplate = `
@@ -71,7 +78,7 @@ exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail
           <div class="email-container">
               <!-- Header -->
               <div class="email-header">
-                  <img src="https://via.placeholder.com/150" alt="Your Logo">
+                  <img src="https://res.cloudinary.com/dm9iuudyc/image/upload/v1734018375/elixzor-consulting/Logo/elixzor_logo003_dgsuut.png" alt="Your Logo">
               </div>
 
               <!-- Body -->
@@ -79,9 +86,9 @@ exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail
                   <h1>Thank You for Your Purchase, ${PurchaserName}!</h1>
                   <p>We’re thrilled to let you know that your order has been confirmed.</p>
                   <p><strong>Order Details:</strong></p>
-                  <p>Order ID: <strong>${orderID || 'ORDER_1234'}</strong></p>
+                  <p>Order ID: <strong>${orderID || "ORDER_1234"}</strong></p>
                   <p>Purchased Item: <strong>${ebookName}</strong></p>
-                  <p>If you have any questions or need assistance, please don’t hesitate to <a href="#">contact us</a>.</p>
+                  <p>If you have any questions or need assistance, please don’t hesitate to <a href="https://elixzor-ebook.com/contact" >contact us</a>.</p>
                   <p>Enjoy your new ebook!</p>
                   <a href="#" class="cta">Download Your Ebook</a>
               </div>
@@ -89,7 +96,7 @@ exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail
               <!-- Footer -->
               <div class="email-footer">
                   <p>&copy; 2024 Elixzor Media. All rights reserved.</p>
-                  <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+                  <p><a href="https://elixzor-ebook.com/privacy-policy">Privacy Policy</a> | <a href="https://elixzor-ebook.com/terms-conditions">Terms of Service</a></p>
               </div>
           </div>
       </body>
@@ -165,7 +172,7 @@ exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail
           <div class="email-container">
               <!-- Header -->
               <div class="email-header">
-                  <img src="https://via.placeholder.com/150" alt="Your Logo">
+                  <img src="https://res.cloudinary.com/dm9iuudyc/image/upload/v1734018375/elixzor-consulting/Logo/elixzor_logo003_dgsuut.png" alt="Your Logo">
               </div>
 
               <!-- Body -->
@@ -173,7 +180,7 @@ exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail
                   <h1>Referral Commission Earned, ${youtuberName}!</h1>
                   <p>We’re happy to inform you that you’ve earned a referral commission.</p>
                   <p><strong>Purchased Item:</strong> ${ebookName}</p>
-                  <p><strong>Order ID:</strong> ${orderID || 'ORDER_1234'}</p>
+                  <p><strong>Order ID:</strong> ${orderID || "ORDER_1234"}</p>
                   <p>Thank you for your continued support and referrals.</p>
                   <a href="#" class="cta">View Dashboard</a>
               </div>
@@ -181,7 +188,7 @@ exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail
               <!-- Footer -->
               <div class="email-footer">
                   <p>&copy; 2024 Elixzor Media. All rights reserved.</p>
-                  <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+                  <p><a href="https://elixzor-ebook.com/privacy-policy">Privacy Policy</a> | <a href="https://elixzor-ebook.com/terms-conditions">Terms of Service</a></p>
               </div>
           </div>
       </body>
@@ -191,19 +198,19 @@ exports.sendPurchaseEmails = async (purchaserEmail, PurchaserName, youtuberEmail
     // Send email to purchaser
     await sendEmail({
       to: purchaserEmail,
-      subject: 'Ebook Purchase Confirmation',
+      subject: "Ebook Purchase Confirmation",
       html: purchaserTemplate,
     });
 
     // Send email to youtuber
-    if (youtuberEmail){
-        await sendEmail({
-            to: youtuberEmail,
-            subject: 'Referral Commission Earned',
-            html: youtuberTemplate,
-          });
+    if (youtuberEmail) {
+      await sendEmail({
+        to: youtuberEmail,
+        subject: "Referral Commission Earned",
+        html: youtuberTemplate,
+      });
     }
   } catch (error) {
-    console.error('Error sending emails:', error.message);
+    console.error("Error sending emails:", error.message);
   }
 };
