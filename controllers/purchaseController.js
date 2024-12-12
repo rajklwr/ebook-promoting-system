@@ -1,6 +1,6 @@
-const Purchase = require('../models/Purchase');
-const Youtuber = require('../models/Youtuber');
-const { sendPurchaseEmails } = require('../controllers/emailController');
+const Purchase = require("../models/Purchase");
+const Youtuber = require("../models/Youtuber");
+const { sendPurchaseEmails } = require("../controllers/emailController");
 
 exports.recordPurchase = async (req, res) => {
   try {
@@ -8,17 +8,34 @@ exports.recordPurchase = async (req, res) => {
 
     // Validate referrer
     const youtuber = await Youtuber.findOne({ referralCode: referrer });
-    if (!youtuber) return res.status(400).json({ message: 'Invalid referral code' });
+    // if (!youtuber)
+    //   return res.status(400).json({ message: "Invalid referral code" });
 
     // Record purchase
-    const purchase = new Purchase({ purchaserEmail, ebookName, price, referrer });
+    const purchase = new Purchase({
+      purchaserEmail,
+      ebookName,
+      price,
+      referrer,
+    });
     await purchase.save();
 
-    // Send emails
-    sendPurchaseEmails(purchaserEmail, youtuber.email,youtuber?.name, ebookName);
+    await Youtuber.updateOne(
+      { referralCode: referrer },
+      { $inc: { successReferral: 1 } }
+    );
 
-    res.status(201).json({ message: 'Purchase recorded successfully!' });
+    // Send emails
+    sendPurchaseEmails(
+      purchaserEmail,
+      youtuber.email,
+      youtuber?.name,
+      ebookName,
+      youtuber?.successReferral + 1 
+    );
+
+    res.status(201).json({ message: "Purchase recorded successfully!" });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

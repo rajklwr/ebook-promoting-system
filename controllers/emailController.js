@@ -6,7 +6,8 @@ exports.sendPurchaseEmails = async (
   youtuberEmail,
   youtuberName,
   ebookName,
-  orderID
+  orderID,
+  successReferral
 ) => {
   try {
     // HTML template for purchaser
@@ -90,7 +91,7 @@ exports.sendPurchaseEmails = async (
                   <p>Purchased Item: <strong>${ebookName}</strong></p>
                   <p>If you have any questions or need assistance, please don’t hesitate to <a href="https://elixzor-ebook.com/contact" >contact us</a>.</p>
                   <p>Enjoy your new ebook!</p>
-                  <a href="#" class="cta">Download Your Ebook</a>
+                  <a href="https://drive.google.com/uc?id=1pJh9lmPFtEqFf-G1df6OARUe41YpN7iL&export=download" class="cta">Download Your Ebook</a>
               </div>
 
               <!-- Footer -->
@@ -180,9 +181,9 @@ exports.sendPurchaseEmails = async (
                   <h1>Referral Commission Earned, ${youtuberName}!</h1>
                   <p>We’re happy to inform you that you’ve earned a referral commission.</p>
                   <p><strong>Purchased Item:</strong> ${ebookName}</p>
-                  <p><strong>Order ID:</strong> ${orderID || "ORDER_1234"}</p>
+                  <p><strong>Successfull Referrals : </strong> ${successReferral}</p>
+                  <p><strong>Total Amount Earned : </strong> $${successReferral * Number(process.env.COMISSION_PER_REFERRAL) }</p>
                   <p>Thank you for your continued support and referrals.</p>
-                  <a href="#" class="cta">View Dashboard</a>
               </div>
 
               <!-- Footer -->
