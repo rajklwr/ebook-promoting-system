@@ -69,6 +69,7 @@ exports.addYouTuber = async (req, res) => {
     });
   } catch (error) {
     // Handle other errors
+    console.log('Failed to add Youtube :', error)
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
