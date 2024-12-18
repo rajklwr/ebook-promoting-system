@@ -71,7 +71,7 @@ exports.addYouTuber = async (req, res) => {
     res.status(201).json({
       message: 'YouTuber added successfully',
       youTuber: newYouTuber,
-      url: `https://elixzor-ebook.com/?referrer=${encryptedReferralCode}`
+      url: `https://elixzor-ebook.com/?${encryptedReferralCode}`
     });
   } catch (error) {
     // Handle other errors
