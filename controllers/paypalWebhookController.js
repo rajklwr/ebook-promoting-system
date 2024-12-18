@@ -103,7 +103,7 @@ const recordPurchase = async (resource) => {
     if (!youtuber)
       return res.status(400).json({ message: "Invalid referral code" });
 
-    console.log("Youtuber :", youtuber);
+    // console.log("Youtuber :", youtuber);
 
     // Record purchase
     const purchase = new Purchase({

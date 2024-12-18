@@ -10,6 +10,10 @@ const paypalWebhookRoutes = require('./routes/paypalWebhookRoutes');
 dotenv.config();
 connectDB();
 
+
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || '12345678901234567890123456789012'; // 32 characters for AES-256
+
+
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());

@@ -5,6 +5,10 @@ const Youtuber = require('../models/Youtuber');
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || '12345678901234567890123456789012'; // 32 characters for AES-256
 const IV_LENGTH = 16; // AES block size
 
+console.log('Key Length:', Buffer.from(ENCRYPTION_KEY).length);
+console.log('Key:', ENCRYPTION_KEY);
+
+
 // Function to encrypt a value
 function encrypt(text) {
   let iv = crypto.randomBytes(IV_LENGTH);
@@ -40,7 +44,7 @@ exports.addYouTuber = async (req, res) => {
       return res.status(201).json({
         message: 'This email is already added',
         youTuber: existingByEmail,
-        url: `https://elixzor-ebook.com/?referrer=${existingByEmail.referralCode}`
+        url: `https://elixzor-ebook.com/?${existingByEmail.referralCode}`
       });
     }
 
@@ -61,6 +65,8 @@ exports.addYouTuber = async (req, res) => {
     });
 
     await newYouTuber.save();
+
+    console.log('Youtuber Created Successfully :', newYouTuber )
 
     res.status(201).json({
       message: 'YouTuber added successfully',
