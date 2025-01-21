@@ -14,7 +14,7 @@ const PAYPAL_WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
 exports.handlePayPalWebhook = async (req, res) => {
   const body = req.body;
 
-  console.log("body : ", body);
+  // console.log("body : ", body);
 
   try {
     // Validate the PayPal webhook signature
@@ -26,19 +26,17 @@ exports.handlePayPalWebhook = async (req, res) => {
     // Process the event
     const eventType = body.event_type;
 
-    console.log("event type :", eventType);
+    // console.log("event type :", eventType);
 
     switch (eventType) {
       case "CHECKOUT.ORDER.APPROVED":
         console.log("Payment successful:", body.resource);
         console.log("Purchase Units :", body.resource.purchase_units);
         await recordPurchase(body.resource);
-        // Add your logic for successful payment
         break;
 
       case "CHECKOUT.ORDER.DENIED":
         console.log("Payment denied:", body.resource);
-        // Add your logic for denied payment
         break;
 
       default:
@@ -51,7 +49,6 @@ exports.handlePayPalWebhook = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 // Function to validate the PayPal webhook signature
 const validatePayPalSignature = async (headers, body) => {
   const {
@@ -91,48 +88,52 @@ const recordPurchase = async (resource) => {
     const purchaserEmail = resource?.payer?.email_address;
     const ebookName = "YT AUTOMATION";
     const price = 27;
-    const referrer = resource.purchase_units[0].custom_id;
+    const referrer = resource.purchase_units[0].custom_id; // Get referrer
     const purchaserName = resource.payer?.name?.given_name;
     const orderId = resource.id;
 
     console.log("Referral Id ", referrer);
     console.log("Purchaser Name :", purchaserName);
 
-    // Validate referrer
-    const youtuber = await Youtuber.findOne({ referralCode: referrer });
-    if (!youtuber)
-      return res.status(400).json({ message: "Invalid referral code" });
+    // Check referrer validity if it exists
+    if (referrer) {
+      const youtuber = await Youtuber.findOne({ referralCode: referrer });
+      if (!youtuber) {
+        throw new Error("Invalid referral code");
+      }
 
-    // console.log("Youtuber :", youtuber);
+      // Update referrer's successful referrals
+      await Youtuber.updateOne(
+        { referralCode: referrer },
+        { $inc: { successReferral: 1 } }
+      );
+
+      // Send emails to referrer
+      sendPurchaseEmails(
+        purchaserEmail,
+        purchaserName,
+        youtuber?.email,
+        youtuber?.name,
+        ebookName,
+        orderId,
+        youtuber?.successReferral + 1
+      );
+    }
 
     // Record purchase
     const purchase = new Purchase({
       purchaserEmail,
       ebookName,
       price,
-      referrer,
+      referrer: referrer || null, // Store referrer if available, else null
     });
     await purchase.save();
 
-    await Youtuber.updateOne(
-      { referralCode: referrer },
-      { $inc: { successReferral: 1 } }
-    );
-
-    // Send emails
-    sendPurchaseEmails(
-      purchaserEmail,
-      purchaserName,
-      youtuber?.email,
-      youtuber?.name,
-      ebookName,
-      orderId,
-      youtuber?.successReferral + 1
-    );
-
-    // res.status(201).json({ message: 'Purchase recorded successfully!' });
+    console.log("Purchase recorded successfully!");
   } catch (error) {
-    throw new Error(error);
-    // res.status(500).json({ message: 'Server error', error: error.message });
+    console.error("Error recording purchase:", error.message);
+    throw error; // Pass the error to the calling function for handling
   }
 };
+
+
